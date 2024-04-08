@@ -9,13 +9,19 @@ from datetime import date, timedelta
 from quiz import models as QMODEL
 from student import models as SMODEL
 from quiz import forms as QFORM
-
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 #for showing signup/login button for teacher
 def teacherclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'teacher/teacherclick.html')
+
+    # Define custom_logout function
+def custom_logout(request):
+    logout(request)
+    return redirect('home_view')
 
 def teacher_signup_view(request):
     userForm=forms.TeacherUserForm()
@@ -45,12 +51,11 @@ def is_teacher(user):
 @user_passes_test(is_teacher)
 def teacher_dashboard_view(request):
     dict={
-    
-    'total_course':QMODEL.Course.objects.all().count(),
-    'total_question':QMODEL.Question.objects.all().count(),
-    'total_student':SMODEL.Student.objects.all().count()
+        'total_course': QMODEL.Course.objects.all().count(),
+        'total_question': QMODEL.Question.objects.all().count(),
+        'total_student': SMODEL.Student.objects.all().count()
     }
-    return render(request,'teacher/teacher_dashboard.html',context=dict)
+    return render(request, 'teacher/teacher_dashboard.html', context=dict)
 
 @login_required(login_url='teacherlogin')
 @user_passes_test(is_teacher)
