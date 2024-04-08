@@ -7,8 +7,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('teacher/',include('teacher.urls')),
     path('student/',include('student.urls')),
-    
+    path('logout/', views.custom_logout, name='logout'),  # Custom logout view
 
+    path('', views.home_view, name='home_view'),  # Added home view path
 
     path('',views.home_view,name=''),
     path('logout', LogoutView.as_view(template_name='quiz/logout.html'),name='logout'),

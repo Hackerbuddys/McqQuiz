@@ -1,9 +1,8 @@
-from django.shortcuts import render,redirect,reverse
-from . import forms,models
+from django.contrib.auth import logout
+from django.shortcuts import redirect, render
+from . import forms, models
 from django.db.models import Sum
-from django.contrib.auth.models import Group
-from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required,user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
 from datetime import date, timedelta
 from django.db.models import Q
@@ -13,14 +12,26 @@ from student import models as SMODEL
 from teacher import forms as TFORM
 from student import forms as SFORM
 from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
+from django.http import HttpResponseRedirect
 
+
+def adminclick_view(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('afterlogin'))
+    return HttpResponseRedirect(reverse('adminlogin'))
 
 
 def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')  
-    return render(request,'quiz/index.html')
+    return render(request, 'quiz/index.html')
 
+# Define custom_logout function
+def custom_logout(request):
+    logout(request)
+    return redirect('home_view')
 
 def is_teacher(user):
     return user.groups.filter(name='TEACHER').exists()
