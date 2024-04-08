@@ -16,5 +16,6 @@ path('view-result', views.view_result_view,name='view-result'),
 path('check-marks/<int:pk>', views.check_marks_view,name='check-marks'),
 path('student-marks', views.student_marks_view,name='student-marks'),
 
- path('logout', views.custom_logout, name='student_logout'),
+   path('studentlogin/', LoginView.as_view(template_name='student/studentlogin.html'), name='studentlogin'),
+    path('logout/', views.logout_view, name='logout'),
 ]

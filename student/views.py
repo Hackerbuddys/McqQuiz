@@ -1,5 +1,6 @@
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+# from django.views.decorators.http import require_POST  # Add this import
 
 from . import forms, models
 from django.db.models import Sum
@@ -12,14 +13,13 @@ from quiz import models as QMODEL
 from teacher import models as TMODEL
 from django.shortcuts import render
 
-
 # for showing signup/login button for student
 def studentclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'student/studentclick.html')
 
-def custom_logout(request):
+def logout_view(request):
     logout(request)
     return redirect('home_view')
 
