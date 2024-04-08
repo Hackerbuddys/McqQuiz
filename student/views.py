@@ -1,5 +1,7 @@
-from django.shortcuts import render,redirect,reverse
-from . import forms,models
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+from . import forms, models
 from django.db.models import Sum
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
@@ -8,13 +10,18 @@ from django.conf import settings
 from datetime import date, timedelta
 from quiz import models as QMODEL
 from teacher import models as TMODEL
+from django.shortcuts import render
 
 
-#for showing signup/login button for student
+# for showing signup/login button for student
 def studentclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'student/studentclick.html')
+
+def custom_logout(request):
+    logout(request)
+    return redirect('home_view')
 
 def student_signup_view(request):
     userForm=forms.StudentUserForm()
@@ -42,9 +49,8 @@ def is_student(user):
 @user_passes_test(is_student)
 def student_dashboard_view(request):
     dict={
-    
-    'total_course':QMODEL.Course.objects.all().count(),
-    'total_question':QMODEL.Question.objects.all().count(),
+        'total_course':QMODEL.Course.objects.all().count(),
+        'total_question':QMODEL.Question.objects.all().count(),
     }
     return render(request,'student/student_dashboard.html',context=dict)
 
@@ -77,7 +83,6 @@ def start_exam_view(request,pk):
     response.set_cookie('course_id',course.id)
     return response
 
-
 @login_required(login_url='studentlogin')
 @user_passes_test(is_student)
 def calculate_marks_view(request):
@@ -88,7 +93,6 @@ def calculate_marks_view(request):
         total_marks=0
         questions=QMODEL.Question.objects.all().filter(course=course)
         for i in range(len(questions)):
-            
             selected_ans = request.COOKIES.get(str(i+1))
             actual_answer = questions[i].answer
             if selected_ans == actual_answer:
@@ -102,14 +106,11 @@ def calculate_marks_view(request):
 
         return HttpResponseRedirect('view-result')
 
-
-
 @login_required(login_url='studentlogin')
 @user_passes_test(is_student)
 def view_result_view(request):
     courses=QMODEL.Course.objects.all()
     return render(request,'student/view_result.html',{'courses':courses})
-    
 
 @login_required(login_url='studentlogin')
 @user_passes_test(is_student)
@@ -124,4 +125,3 @@ def check_marks_view(request,pk):
 def student_marks_view(request):
     courses=QMODEL.Course.objects.all()
     return render(request,'student/student_marks.html',{'courses':courses})
-  
